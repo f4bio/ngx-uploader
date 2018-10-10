@@ -217,7 +217,7 @@ export class NgUploaderService {
       };
 
       xhr.open(method, url, true);
-      xhr.withCredentials = event.withCredentials ? true : false;
+      xhr.withCredentials = event.withCredentials;
 
       try {
         const uploadFile = <BlobFile>file.nativeFile;
@@ -233,7 +233,10 @@ export class NgUploaderService {
 
         if (event.includeWebKitFormBoundary !== false) {
           Object.keys(data).forEach(key => file.form.append(key, data[key]));
-          file.form.append(event.fieldName || 'file', uploadFile, uploadFile.name);
+          file.form.append(
+            event.fieldName || 'file',
+            uploadFile,
+            event.encodeFilenames ? encodeURIComponent(uploadFile.name) : uploadFile.name);
           bodyToSend = file.form;
         } else {
           bodyToSend = uploadFile;

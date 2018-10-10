@@ -130,6 +130,7 @@ export interface UploadInput {
   method?: string; // method (POST | PUT)
   id?: string; // unique id of uploaded file
   fieldName?: string; // field name (default 'file')
+  fileName?: number; // fileIndex in internal ngx-uploader array of files
   fileIndex?: number; // fileIndex in internal ngx-uploader array of files
   file?: UploadFile; // uploading file
   data?: { [key: string]: string | Blob }; // custom data sent with the file
