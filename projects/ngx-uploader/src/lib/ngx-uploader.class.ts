@@ -1,7 +1,7 @@
-import { EventEmitter } from '@angular/core';
-import { Observable, Subject, Subscription } from 'rxjs';
-import { mergeMap } from 'rxjs/operators';
-import { UploadFile, UploadOutput, UploadInput, UploadStatus, BlobFile } from './interfaces';
+import {EventEmitter} from '@angular/core';
+import {Observable, Subject, Subscription} from 'rxjs';
+import {mergeMap} from 'rxjs/operators';
+import {UploadFile, UploadOutput, UploadInput, UploadStatus, BlobFile} from './interfaces';
 
 export function humanizeBytes(bytes: number): string {
   if (bytes === 0) {
@@ -23,7 +23,9 @@ export class NgUploaderService {
   contentTypes: string[];
   maxUploads: number;
 
-  constructor(concurrency: number = Number.POSITIVE_INFINITY, contentTypes: string[] = ['*'], maxUploads: number = Number.POSITIVE_INFINITY) {
+  constructor(concurrency: number = Number.POSITIVE_INFINITY,
+              contentTypes: string[] = ['*'],
+              maxUploads: number = Number.POSITIVE_INFINITY) {
     this.queue = [];
     this.serviceEvents = new EventEmitter<UploadOutput>();
     this.uploadScheduler = new Subject();
@@ -45,7 +47,7 @@ export class NgUploaderService {
         acc = acc.concat(checkFile);
       } else {
         const rejectedFile: UploadFile = this.makeUploadFile(checkFile, i);
-        this.serviceEvents.emit({ type: 'rejected', file: rejectedFile });
+        this.serviceEvents.emit({type: 'rejected', file: rejectedFile});
       }
 
       return acc;
@@ -53,11 +55,11 @@ export class NgUploaderService {
 
     this.queue.push(...[].map.call(allowedIncomingFiles, (file: File, i: number) => {
       const uploadFile: UploadFile = this.makeUploadFile(file, i);
-      this.serviceEvents.emit({ type: 'addedToQueue', file: uploadFile });
+      this.serviceEvents.emit({type: 'addedToQueue', file: uploadFile});
       return uploadFile;
     }));
 
-    this.serviceEvents.emit({ type: 'allAddedToQueue' });
+    this.serviceEvents.emit({type: 'allAddedToQueue'});
   }
 
   initInputEvents(input: EventEmitter<UploadInput>): Subscription {
@@ -66,12 +68,12 @@ export class NgUploaderService {
         case 'uploadFile':
           const uploadFileIndex = this.queue.findIndex(file => file === event.file);
           if (uploadFileIndex !== -1 && event.file) {
-            this.uploadScheduler.next({ file: this.queue[uploadFileIndex], event: event });
+            this.uploadScheduler.next({file: this.queue[uploadFileIndex], event: event});
           }
           break;
         case 'uploadAll':
           const files = this.queue.filter(file => file.progress.status === UploadStatus.Queue);
-          files.forEach(file => this.uploadScheduler.next({ file: file, event: event }));
+          files.forEach(file => this.uploadScheduler.next({file: file, event: event}));
           break;
         case 'cancel':
           const id = event.id || null;
@@ -86,7 +88,7 @@ export class NgUploaderService {
             const fileIndex = this.queue.findIndex(file => file.id === id);
             if (fileIndex !== -1) {
               this.queue[fileIndex].progress.status = UploadStatus.Cancelled;
-              this.serviceEvents.emit({ type: 'cancelled', file: this.queue[fileIndex] });
+              this.serviceEvents.emit({type: 'cancelled', file: this.queue[fileIndex]});
             }
           }
           break;
@@ -99,7 +101,7 @@ export class NgUploaderService {
             const file = this.queue.find(uploadFile => uploadFile.id === sub.id);
             if (file) {
               file.progress.status = UploadStatus.Cancelled;
-              this.serviceEvents.emit({ type: 'cancelled', file: file });
+              this.serviceEvents.emit({type: 'cancelled', file: file});
             }
           });
           break;
@@ -112,13 +114,13 @@ export class NgUploaderService {
           if (i !== -1) {
             const file = this.queue[i];
             this.queue.splice(i, 1);
-            this.serviceEvents.emit({ type: 'removed', file: file });
+            this.serviceEvents.emit({type: 'removed', file: file});
           }
           break;
         case 'removeAll':
           if (this.queue.length) {
             this.queue = [];
-            this.serviceEvents.emit({ type: 'removedAll' });
+            this.serviceEvents.emit({type: 'removedAll'});
           }
           break;
       }
@@ -137,7 +139,7 @@ export class NgUploaderService {
           observer.complete();
         });
 
-      this.subs.push({ id: upload.file.id, sub: sub });
+      this.subs.push({id: upload.file.id, sub: sub});
     });
   }
 
@@ -175,7 +177,7 @@ export class NgUploaderService {
             }
           };
 
-          observer.next({ type: 'uploading', file: file });
+          observer.next({type: 'uploading', file: file});
         }
       }, false);
 
@@ -210,7 +212,7 @@ export class NgUploaderService {
 
           file.responseHeaders = this.parseResponseHeaders(xhr.getAllResponseHeaders());
 
-          observer.next({ type: 'done', file: file });
+          observer.next({type: 'done', file: file});
 
           observer.complete();
         }
@@ -242,7 +244,7 @@ export class NgUploaderService {
           bodyToSend = uploadFile;
         }
 
-        this.serviceEvents.emit({ type: 'start', file: file });
+        this.serviceEvents.emit({type: 'start', file: file});
         xhr.send(bodyToSend);
       } catch (e) {
         observer.complete();
@@ -263,7 +265,7 @@ export class NgUploaderService {
   }
 
   setContentTypes(contentTypes: string[]): void {
-    if (typeof contentTypes != 'undefined' && contentTypes instanceof Array) {
+    if (typeof contentTypes !== 'undefined' && contentTypes instanceof Array) {
       if (contentTypes.find((type: string) => type === '*') !== undefined) {
         this.contentTypes = ['*'];
       } else {
@@ -305,7 +307,7 @@ export class NgUploaderService {
           etaHuman: null
         }
       },
-      lastModifiedDate: file.lastModifiedDate,
+      lastModifiedDate: file.lastModified,
       sub: undefined,
       nativeFile: file
     };
