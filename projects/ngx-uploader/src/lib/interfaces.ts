@@ -33,7 +33,7 @@ export interface UploadProgress {
 export interface UploadFile {
   id: string;
   fileIndex: number;
-  lastModifiedDate: Date;
+  lastModified: number;
   name: string;
   size: number;
   type: string;

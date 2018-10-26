@@ -307,7 +307,7 @@ export class NgUploaderService {
           etaHuman: null
         }
       },
-      lastModifiedDate: file.lastModified,
+      lastModified: file.lastModified,
       sub: undefined,
       nativeFile: file
     };
